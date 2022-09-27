@@ -1,0 +1,28 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        maven {
+            url "http://192.168.3.15:8081/repository/maven-public/"
+            allowInsecureProtocol true
+        }
+        google()
+        mavenCentral()
+    }
+
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        maven {
+            url "http://192.168.3.15:8081/repository/maven-public/"
+            allowInsecureProtocol true
+        }
+        google()
+        mavenCentral()
+    }
+
+}
+
+rootProject.name = "test1"
+include ':app'
+include ':mylibrary'

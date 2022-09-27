@@ -1,0 +1,127 @@
+plugins {
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
+    id 'maven-publish'
+}
+
+
+android {
+    compileSdk 30
+
+    defaultConfig {
+        minSdk 21
+        targetSdk 30
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+}
+
+dependencies {
+    implementation 'androidx.core:core-ktx:1.7.0'
+    implementation 'androidx.appcompat:appcompat:1.5.1'
+    implementation 'com.google.android.material:material:1.6.1'
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+
+}
+
+
+//gradle 7.0遗下版本
+//uploadArchives {
+//  //新增 ，因为Android Studio gradle 支持maven插件，所以可以添加此task
+//    configuration = configurations.archives
+//    repositories {
+//        maven {
+//
+//            snapshotRepository(url: MAVEN_REPO_SNAPSHOT_URL) {
+//                authentication(userName: NEXUS_USERNAME, password: NEXUS_PASSWORD)
+//            }
+//
+//            repository(url: MAVEN_REPO_RELEASE_URL) {
+//                authentication(userName: NEXUS_USERNAME, password: NEXUS_PASSWORD)
+//            }
+//
+//            pom.project {
+//                version '1.1.8' //版本名称 上传是不能和之前的一样，否则上传失败
+//                artifactId GROUP_ID  //和前面网站上填写的一样
+//                groupId GROUP  //和前面网站上填写的一样
+//                packaging TYPE //填写aar
+//                description DESCRIPTION //更新描述
+//            }
+//        }
+//    }
+//}
+
+
+//打包main目录下代码和资源的 task
+task androidSourcesJar(type: Jar) {
+    classifier = 'sources'
+    from android.sourceSets.main.java.srcDirs
+}
+
+//gradle 7.0以上版本
+afterEvaluate {
+    publishing {
+        publications {
+//             Creates a Maven publication called "release".
+            release(MavenPublication) {
+                // Applies the component for the release build variant.
+                from components.release
+
+                // You can then customize attributes of the publication as shown below.
+                groupId = GROUP_ID
+                artifactId = 'artifactId'
+                version = '1.0.2'
+            }
+            // Creates a Maven publication called “debug”.
+            debug(MavenPublication) {
+                // Applies the component for the debug build variant.
+                from components.debug
+
+                groupId = GROUP_ID
+                artifactId = 'artifactId'
+                version = '1.0.2-SNAPSHOT'
+            }
+        }
+
+        repositories {
+            maven {
+                name = "nexus"
+                allowInsecureProtocol true
+                url MAVEN_GROUP_URL
+                //nexus3没有开启匿名用户访问的话，添加认证信息
+                credentials {
+                    username = NEXUS_USERNAME
+                    password = NEXUS_PASSWORD
+                }
+                def releasesRepoUrl = MAVEN_URL
+                def snapshotsRepoUrl = MAVEN_SNAPSHOT_URL
+                url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+                url = snapshotsRepoUrl
+            }
+        }
+    }
+}
+
+
+//参考资料：https://blog.csdn.net/lucky_tom/article/details/120738113
+
+
+
+

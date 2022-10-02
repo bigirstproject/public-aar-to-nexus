@@ -42,7 +42,7 @@ dependencies {
 }
 
 
-//gradle 7.0遗下版本
+//gradle 7.0以下版本
 //uploadArchives {
 //  //新增 ，因为Android Studio gradle 支持maven插件，所以可以添加此task
 //    configuration = configurations.archives
